@@ -1,6 +1,6 @@
 # Zero-Shot Knowledge Distillation in Deep Networks
 
-ZSKD for PyTorch
+ZSKD with PyTorch 
 
 
 
