@@ -8,20 +8,30 @@ ZSKD with PyTorch
 
 - Pytorch 1.14 
 - Python 3.6
-- CUDA 10.1 
 
 
 ## Running the code
 
+For mnist dataset,
+
 ```shell
-python main.py --teahcer_model_path=models/teacher_cifar10.pt --n=10
+python main.py --dataset=mnist --t_train=False --teahcer_model_path=models/teacher_mnist.pt --n=10
 ```
+
+For cifar10 dataset,
+
+```shell
+python main.py --dataset=cifar10 --t_train=False --teahcer_model_path=models/teacher_cifar10.pt --n=10
+```
+
 
 Arguments:
 
+- `dataset` - available dataset: ['mnist', 'cifar10', 'cifar100']
 - `teahcer_model_path` - teacher model path (.pt) 
 - `t_train` - Train teacher network?? 
-	- Please, use True (not yet implement the code that train a teacher network)
+	- if True, train teacher network
+	- elif False, load trained teacher network
 - `n` - Number of DIs crafted per category
 - `beta` - Beta scaling vectors
 - `batch_size` - batch size
