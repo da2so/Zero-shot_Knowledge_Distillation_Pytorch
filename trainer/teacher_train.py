@@ -8,10 +8,11 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader 
 
 from trainer.lenet import LeNet5
-import trainer.resnet 
-from trainer.utils import transformer
+from trainer.resnet import ResNet34
+from trainer.utils import transformer, adjust_learning_rate
 
-class trainer():
+
+class t_trainer():
     def __init__(self, dataset, data_path='./trainer/dataset/',model_path='./trainer/models/'):
 
         self.acc = 0
@@ -39,7 +40,7 @@ class trainer():
             self.data_test = CIFAR10(data_path, train=False, transform=test_trans, download=True)
             batch_size=128
             self.epochs=200
-            self.net = resnet.ResNet34().cuda()
+            self.net = ResNet34().cuda()
             self.optimizer = torch.optim.SGD(self.net.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4)
 
         elif self.dataset == 'cifar100':
@@ -47,7 +48,7 @@ class trainer():
             self.data_test = CIFAR100(data_path, train=False, transform=transform_test, download=True)
             batch_size=128
             self.epochs=200
-            self.net = resnet.ResNet34(num_classes=100).cuda()
+            self.net = ResNet34(num_classes=100).cuda()
             self.optimizer = torch.optim.SGD(self.net.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4)
 
         self.data_train_loader = DataLoader(data_train, batch_size=batch_size, shuffle=True, num_workers=0)
@@ -58,7 +59,7 @@ class trainer():
             
     def train(self,epoch):
         if self.dataset != 'mnist':
-            adjust_learning_rate(optimizer, epoch)
+            adjust_learning_rate(self.optimizer, epoch)
         self.net.train()
         for i, (images, labels) in enumerate(self.data_train_loader):
             images, labels = Variable(images).cuda(), Variable(labels).cuda()

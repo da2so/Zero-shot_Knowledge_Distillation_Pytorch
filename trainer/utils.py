@@ -11,7 +11,7 @@ def transformer(dataset):
         train_trans,test_trans=trans, trans
         
     elif dataset == 'cifar10' or dataset == 'cifar100':
-        trans_train = transforms.Compose([
+        train_trans = transforms.Compose([
                 transforms.RandomCrop(32, padding=4),
                 transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),

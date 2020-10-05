@@ -1,21 +1,21 @@
 import os
 import tqdm
 import numpy as np
+import sys
 
 import torch
 import torch.nn.functional as F
 import torchvision.utils as vutils
 from torch.autograd import Variable
 
-from utils import data_info
-
+from utils import data_info, save_img
 
 class ZSKD():
-    def __init__(self, dataset, teacher, n, beta, t, batch_size, lr, iters):
+    def __init__(self, dataset, teacher, num_sample, beta, t, batch_size, lr, iters):
         self.dataset = dataset
-        self.cwh, self.num_classes = data_info(self.dataset)
+        self.cwh, self.num_classes ,self.student = data_info(self.dataset)
         self.teacher = teacher
-        self.n = n
+        self.num_sample = num_sample
         self.beta = beta
         self.t = t
         self.batch_size = batch_size
@@ -47,11 +47,13 @@ class ZSKD():
         cls_sim_norm = get_class_similarity()
         
         loss = torch.nn.BCELoss()
-        print('\n ----------    ZSKD start    ---------- ')
+        print('\n'+'-'*30+' ZSKD start '+'-'*30)
+
+        # generate synthesized images
         for k in range(self.num_classes):
 
             for b in self.beta:
-                for n in range(self.n // len(self.beta)):
+                for n in range(self.num_sample // len(self.beta) // self.batch_size // self.num_classes):
 
                     # sampling target label from Dirichlet distribution
                     dir_dist = torch.distributions.dirichlet.Dirichlet(b * cls_sim_norm[k])
@@ -72,23 +74,28 @@ class ZSKD():
                         optimizer.step()
                         if n_iter % 100 == 0 :
                             print(f'\t[{n_iter}/{self.iters}] Loss: {l} ')
-
-
+                            
                     # save the synthesized images
                     t_cls = torch.argmax(y, dim=1).detach().cpu().numpy()
+                    save_root = './saved_img/'+self.dataset+'/'
                     for m in range(self.batch_size):
-                        save_dir = 'saved_img/' +self.dataset+'/'+str(t_cls[m])+'_'+str(b)+'/'
+                        save_dir = save_root+str(t_cls[m])+'/'
                         if not os.path.exists(save_dir):
                             os.makedirs(save_dir)
-                        vutils.save_image(inputs[m, :, :, :].data.clone(), save_dir + str(file_num[t_cls[m]]) + '.png', normalize=True)
+                        if self.dataset == 'mnist':
+                            vutils.save_image(inputs[m, :, :, :].data.clone(), save_dir + str(file_num[t_cls[m]]) + '.jpg')
+                        else:
+                            vutils.save_image(inputs[m, :, :, :].data.clone(), save_dir + str(file_num[t_cls[m]]) + '.jpg', normalize=True)
+
                         file_num[t_cls[m]]+=1
                     print('Generate {} synthesized images [{}/{}]'.format(\
-                        self.batch_size,self.batch_size*self.gen_num,self.batch_size *self.num_classes * self.n ))
+                        self.batch_size,self.batch_size*self.gen_num, self.num_sample ))
 
                     self.gen_num+=1
         
-        print('\n ----------ZSKD end---------- \n')
+        print('\n'+'-'*30+' ZSKD end '+'-'*30)
 
+        return self.student, save_root
 
 
 
