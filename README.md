@@ -1,16 +1,24 @@
-# Zero-Shot Knowledge Distillation in Deep Networks
+# Zero-Shot Knowledge Distillation in Deep Networks Pytorch
 
-ZSKD with PyTorch 
+![Python version support](https://img.shields.io/badge/python-3.6-blue.svg)
+![PyTorch version support](https://img.shields.io/badge/pytorch-1.7.0-red.svg)
 
+:star: Star us on GitHub — it helps!!
 
-## Requirements
-
-- Pytorch 1.14 
-- Torchvision 0.5.0
-- Python 3.6
+PyTorch implementation for *[Zero-Shot Knowledge Distillation in Deep Networks](https://arxiv.org/abs/1905.08114)*
 
 
-## Running the code
+## Install
+
+You will need a machine with a GPU and CUDA installed.  
+Then, you prepare runtime environment:
+
+   ```shell
+   pip install -r requirements.txt
+   ```
+
+
+## Use
 
 For mnist dataset,
 
@@ -49,5 +57,5 @@ Arguments:
 
 ## Understanding this method(algorithm)
 
-Check my blog!!
+:white_check_mark: Check my blog!!
 [Here](https://da2so.github.io/2020-08-12-Zero_Shot_Knowledge_Distillation_in_Deep_Networks/)
