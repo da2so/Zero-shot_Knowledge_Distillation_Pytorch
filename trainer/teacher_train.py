@@ -44,8 +44,8 @@ class t_trainer():
             self.optimizer = torch.optim.SGD(self.net.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4)
 
         elif self.dataset == 'cifar100':
-            data_train = CIFAR100(data_path, transform=transform_train, download=True)
-            self.data_test = CIFAR100(data_path, train=False, transform=transform_test, download=True)
+            data_train = CIFAR100(data_path, transform=train_trans, download=True)
+            self.data_test = CIFAR100(data_path, train=False, transform=test_trans, download=True)
             batch_size=128
             self.epochs=200
             self.net = ResNet34(num_classes=100).cuda()
