@@ -29,7 +29,7 @@ python main.py --dataset=mnist --t_train=False --num_sample=12000 --batch_size=2
 For cifar10 dataset,
 
 ```shell
-python main.py --dataset=cifar10 --t_train=True --num_sample=24000 --batch_size=100
+python main.py --dataset=cifar10 --t_train=False --num_sample=24000 --batch_size=100
 ```
 
 
