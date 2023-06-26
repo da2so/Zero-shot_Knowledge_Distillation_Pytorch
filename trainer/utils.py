@@ -1,14 +1,27 @@
+from typing import Tuple
+import torch
 import torchvision.transforms as transforms
 
+class KeepChannelsTransform:
+    """Rotate by one of the given angles."""
 
-def transformer(dataset):
-    if dataset =='mnist':
-        trans=transforms.Compose([  transforms.Resize((32, 32)),
-                                    transforms.ToTensor(),
-                                    transforms.Normalize((0.1307,), (0.3081,))
-                                    ])
+    def __init__(self, channels: Tuple[int, ...]):
+        self.channels = channels
 
-        train_trans,test_trans=trans, trans
+    def __call__(self, x: torch.Tensor) -> torch.Tensor:
+        return x[self.channels, :]
+    
+
+def transformer(dataset) -> Tuple[transforms.Compose, transforms.Compose]:
+    if dataset == 'mnist':
+        trans=transforms.Compose([  
+            transforms.Resize((32, 32)),
+            transforms.ToTensor(),
+            KeepChannelsTransform((0,)),
+            transforms.Normalize((0.1307,), (0.3081,)),
+        ])
+
+        train_trans, test_trans = trans, trans
         
     elif dataset == 'cifar10' or dataset == 'cifar100':
         train_trans = transforms.Compose([
@@ -23,7 +36,9 @@ def transformer(dataset):
                 transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
             ])
         
-        
+    else:
+        raise ValueError("Dataset does not have transforms")
+    
     return train_trans, test_trans
 
 

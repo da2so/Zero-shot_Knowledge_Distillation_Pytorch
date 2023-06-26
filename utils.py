@@ -1,60 +1,30 @@
+from pathlib import Path
 from PIL import Image
 import numpy as np
 
 import torch
 
-from trainer.resnet import ResNet34, ResNet18
-from trainer.lenet import LeNet5, LeNet5Half
-
-def cuda_available():
-    use_cuda = torch.cuda.is_available()
-    return use_cuda
-
-def set_gpu_device(num):
-    torch.cuda.set_device(num)
+from architectures.resnet import ResNet34, ResNet18
+from architectures.lenet import LeNet5, LeNet5Half
+from architectures.resmlp import ResMLP
+from torchvision.utils import save_image
 
 
-def load_model(dataset, model_path):
-    assert ('.pt' or '.pth') in model_path
-    if torch.typename(torch.load(model_path)) == 'OrderedDict':
-        if dataset=='mnist':
-            model = LeNet5()
-        elif dataset== 'cifar10' or dataset=='cifar100':
-            model = ResNet34()
-        model.load_state_dict(torch.load(model_path))
+def save_synthesized_images_labelwise( 
+        inputs: torch.Tensor, 
+        labels: torch.Tensor, 
+        file_counts: np.ndarray,
+        root_dir: Path,
+        normalize: bool=False
+    ) -> None:
 
-    else:
-        model = torch.load(model_path)
+    for image, label in zip(inputs, labels):
+        save_dir = root_dir / str(label)
+        save_dir.mkdir(parents=True, exist_ok=True)
 
-    model.eval()
-    if cuda_available():
-        model.cuda()
-
-    return model
-
-
-def data_info(dataset):
-    if dataset=='mnist':
-        cwh= [1,32,32]
-        num_classes=10
-        student=LeNet5Half()
-    elif dataset == 'cifar10':
-        cwh=[3,32,32]
-        num_classes=10
-        student=ResNet18()
-
-    elif dataset =='cifar100':
-        cwh=[3,32,32]
-        num_classes=100
-        student=ResNet18()
-
-    return cwh, num_classes, student
-
-def save_img(image,save_path):
-
-    np_image=image.data.clone().cpu().numpy()
-    print(np.shape(np_image))
-    np_image=np.squeeze(np_image)
-    PIL_image = Image.fromarray(np_image,'L')
-
-    PIL_image.save(save_path)
+        save_image(
+            tensor=image.detach().clone(), 
+            fp=save_dir / f"{str(file_counts[label])}.jpg", 
+            normalize=normalize
+        )
+        file_counts[label] += 1

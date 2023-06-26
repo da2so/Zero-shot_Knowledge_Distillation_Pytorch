@@ -1,0 +1,13 @@
+python main2.py `
+    --dataset mnist `
+    --teacher lenet `
+    --student lenet `
+    --num-samples 12000 `
+    --batch-size 200 `
+    --student-path './models/students/lenet-lenet-mnist.pt' `
+    --teacher-path './models/teachers/lenet-mnist.pt' `
+    --synthetic-data-path './data/synthetic/mnist-lenet/' `
+    --real-data-path './data/real/' `
+    --synthesize-data `
+    --train-student `
+    --train-teacher `
